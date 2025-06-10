@@ -12,4 +12,7 @@ public interface DocumentMapper {
     int countAll();
     int countExpired();
     List<Document> selectExpired();
+
+    Document selectById(Long id);
+    void updateByPrimaryKeySelective(Document document);
 } 

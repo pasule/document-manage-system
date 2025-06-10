@@ -12,4 +12,6 @@ public interface DocumentService {
     int countAll();
     int countExpired();
     List<Document> getExpiredDocuments();
+    Document getDocumentById(Long id);
+    void moveToRecycleBin(Long id);
 } 

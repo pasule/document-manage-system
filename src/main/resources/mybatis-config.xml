@@ -36,5 +36,10 @@
             <!-- 设置分页合理化 -->
             <property name="reasonable" value="true"/>
         </plugin>
+
+        <plugin interceptor="com.github.pagehelper.PageInterceptor">
+            <!-- 可选配置 -->
+            <property name="supportMethodsArguments" value="true"/>
+        </plugin>
     </plugins>
 </configuration>

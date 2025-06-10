@@ -52,4 +52,17 @@ public class DocumentServiceImpl implements DocumentService {
     public List<Document> getExpiredDocuments() {
         return documentMapper.selectExpired();
     }
-} 
+
+    @Override
+    public Document getDocumentById(Long id) {
+        return documentMapper.selectById(id);
+    }
+
+    @Override
+    public void moveToRecycleBin(Long id) {
+        Document doc = new Document();
+        doc.setId(id);
+        doc.setStatus(0); // 0表示回收站
+        documentMapper.updateByPrimaryKeySelective(doc);
+    }
+}

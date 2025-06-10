@@ -39,9 +39,32 @@
         SELECT COUNT(*) FROM document WHERE status != 0
     </select>
     <select id="countExpired" resultType="int">
+    <![CDATA[
         SELECT COUNT(*) FROM document WHERE update_time < NOW() - INTERVAL 1 YEAR
-    </select>
+        ]]>
+</select>
     <select id="selectExpired" resultMap="DocumentResultMap">
+    <![CDATA[
         SELECT * FROM document WHERE update_time < NOW() - INTERVAL 1 YEAR
+        ]]>
+</select>
+    <select id="selectById" resultType="com.manage.entity.Document">
+        SELECT d.*, s.name as secret_level_name
+        FROM document d
+                 LEFT JOIN secret_level s ON d.secret_level_id = s.id
+        WHERE d.id = #{id}
     </select>
+
+    <!-- 选择性更新档案 -->
+    <update id="updateByPrimaryKeySelective" parameterType="com.manage.entity.Document">
+        UPDATE document
+        <set>
+            <if test="code != null">code = #{code},</if>
+            <if test="title != null">title = #{title},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="description != null">description = #{description},</if>
+            update_time = NOW()
+        </set>
+        WHERE id = #{id}
+    </update>
 </mapper> 
