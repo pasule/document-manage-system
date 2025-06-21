@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.manage.mapper.RuleMapper">
+
+    <select id="findAll" resultType="com.manage.entity.Rule">
+        SELECT * FROM rule ORDER BY id
+    </select>
+
+    <select id="findById" parameterType="long" resultType="com.manage.entity.Rule">
+        SELECT * FROM rule WHERE id = #{id}
+    </select>
+
+    <insert id="insert" parameterType="com.manage.entity.Rule" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO rule (name, code, pattern, example, description, status, create_user)
+        VALUES (#{name}, #{code}, #{pattern}, #{example}, #{description}, #{status}, #{createUser})
+    </insert>
+
+    <update id="update" parameterType="com.manage.entity.Rule">
+        UPDATE rule
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="code != null">code = #{code},</if>
+            <if test="pattern != null">pattern = #{pattern},</if>
+            <if test="example != null">example = #{example},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="long">
+        DELETE FROM rule WHERE id = #{id}
+    </delete>
+
+</mapper> 
