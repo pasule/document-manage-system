@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="f" uri="/functions" %>
 <html>
 <head>
     <title>编号规则管理</title>
@@ -41,7 +42,7 @@
                     <td>${rule.pattern}</td>
                     <td>${rule.example}</td>
                     <td>${rule.statusText}</td>
-                    <td><fmt:formatDate value="${rule.createTime}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
+                    <td>${f:formatLocalDateTime(rule.createTime, 'yyyy-MM-dd HH:mm:ss')}</td>
                     <td class="actions">
                         <a href="${pageContext.request.contextPath}/rule/edit/${rule.id}">编辑</a>
                         <a href="${pageContext.request.contextPath}/rule/delete/${rule.id}" onclick="return confirm('确定要删除吗？')">删除</a>

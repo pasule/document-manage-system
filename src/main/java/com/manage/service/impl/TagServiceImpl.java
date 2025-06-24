@@ -39,4 +39,9 @@ public class TagServiceImpl implements TagService {
         // Here you might want to delete related records in document_tag table first
         tagMapper.delete(id);
     }
+
+    @Override
+    public boolean isTagNameExists(String name) {
+        return tagMapper.findByName(name) != null;
+    }
 } 

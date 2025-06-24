@@ -32,9 +32,16 @@ public class CategoryController {
     }
 
     @PostMapping("/add")
-    public String add(Category category) {
-        categoryService.addCategory(category);
-        return "redirect:/category/list";
+    public String add(Category category, Model model) {
+        try {
+            categoryService.addCategory(category);
+            return "redirect:/category/list";
+        } catch (RuntimeException e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("category", category);
+            model.addAttribute("categories", categoryService.getAllCategories());
+            return "category/add";
+        }
     }
 
     @GetMapping("/edit/{id}")

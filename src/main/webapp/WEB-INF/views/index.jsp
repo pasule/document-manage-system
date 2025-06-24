@@ -94,6 +94,9 @@
         <a href="${pageContext.request.contextPath}/document/upload">上传档案</a>
         <a href="${pageContext.request.contextPath}/document/recycle">回收站</a>
         <a href="${pageContext.request.contextPath}/stats/count">统计信息</a>
+        <a href="${pageContext.request.contextPath}/tag/list">标签管理</a>
+        <a href="${pageContext.request.contextPath}/category/list">分类管理</a>
+        <a href="${pageContext.request.contextPath}/rule/list">编号规则管理</a>
     </div>
     
     <div class="container">
