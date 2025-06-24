@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <html>
 <head>
     <title>添加标签</title>
@@ -16,6 +17,9 @@
 <body>
     <div class="form-container">
         <h2>添加新标签</h2>
+        <c:if test="${not empty error}">
+            <div style="color: red; margin-bottom: 15px;">${error}</div>
+        </c:if>
         <form action="${pageContext.request.contextPath}/tag/add" method="post">
             <div class="form-group">
                 <label for="name">标签名称:</label>

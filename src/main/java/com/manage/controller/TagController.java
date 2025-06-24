@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -30,8 +31,15 @@ public class TagController {
     }
 
     @PostMapping("/add")
-    public String add(Tag tag) {
+    public String add(Tag tag, Model model, RedirectAttributes redirectAttributes) {
+        if (tagService.isTagNameExists(tag.getName())) {
+            model.addAttribute("tag", tag);
+            model.addAttribute("error", "标签名称已存在，请使用其他名称");
+            return "tag/add";
+        }
+
         tagService.addTag(tag);
+        redirectAttributes.addFlashAttribute("success", "标签添加成功");
         return "redirect:/tag/list";
     }
 

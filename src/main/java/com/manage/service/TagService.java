@@ -15,4 +15,6 @@ public interface TagService {
     void updateTag(Tag tag);
 
     void deleteTag(Long id);
+
+    boolean isTagNameExists(String name);
 } 

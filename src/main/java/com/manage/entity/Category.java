@@ -26,4 +26,7 @@ public class Category {
         if (status == null) return "";
         return status == 1 ? "启用" : "停用";
     }
+
+    public String getName() { return name; }
+    public String getCode() { return code; }
 }

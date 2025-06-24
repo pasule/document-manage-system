@@ -10,6 +10,14 @@
         SELECT * FROM category WHERE id = #{id}
     </select>
 
+    <select id="findByName" parameterType="string" resultType="com.manage.entity.Category">
+        SELECT * FROM category WHERE name = #{name} LIMIT 1
+    </select>
+
+    <select id="findByCode" parameterType="string" resultType="com.manage.entity.Category">
+        SELECT * FROM category WHERE code = #{code} LIMIT 1
+    </select>
+
     <insert id="insert" parameterType="com.manage.entity.Category" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO category (name, code, parent_id, level, path, description, status, create_user)
         VALUES (#{name}, #{code}, #{parentId}, #{level}, #{path}, #{description}, #{status}, #{createUser})

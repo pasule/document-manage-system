@@ -26,7 +26,12 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void addCategory(Category category) {
-        // 在添加前可以进行一些业务检查，例如父节点是否存在等
+        if (categoryMapper.findByName(category.getName()) != null) {
+            throw new RuntimeException("分类名称已存在");
+        }
+        if (categoryMapper.findByCode(category.getCode()) != null) {
+            throw new RuntimeException("分类编码已存在");
+        }
         categoryMapper.insert(category);
     }
 

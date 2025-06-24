@@ -17,4 +17,8 @@ public interface CategoryMapper {
     void update(Category category);
 
     void delete(Long id);
+
+    Category findByName(String name);
+
+    Category findByCode(String code);
 } 

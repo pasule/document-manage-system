@@ -30,4 +30,8 @@
         DELETE FROM tag WHERE id = #{id}
     </delete>
 
+    <select id="findByName" parameterType="string" resultType="com.manage.entity.Tag">
+        SELECT * FROM tag WHERE name = #{name}
+    </select>
+
 </mapper> 

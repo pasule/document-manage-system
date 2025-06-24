@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="f" uri="/functions" %>
 <html>
 <head>
     <title>标签管理</title>
@@ -35,9 +35,9 @@
                 <tr>
                     <td>${tag.id}</td>
                     <td>${tag.name}</td>
-                    <td style="background-color:${tag.color};">${tag.color}</td>
+                    <td style="background-color: ${tag.color};">${tag.color}</td>
                     <td>${tag.statusText}</td>
-                    <td><fmt:formatDate value="${tag.createTime}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
+                    <td>${f:formatLocalDateTime(tag.createTime, 'yyyy-MM-dd HH:mm:ss')}</td>
                     <td class="actions">
                         <a href="${pageContext.request.contextPath}/tag/edit/${tag.id}">编辑</a>
                         <a href="${pageContext.request.contextPath}/tag/delete/${tag.id}" onclick="return confirm('确定要删除吗？')">删除</a>
