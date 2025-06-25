@@ -39,4 +39,9 @@ public interface ApproveService {
      * 统计审批记录数
      */
     int countApproves(Map<String, Object> params);
+    
+    /**
+     * 获取所有审批记录
+     */
+    List<Approve> getAllApproves();
 } 

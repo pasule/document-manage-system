@@ -44,11 +44,22 @@ public class ApproveServiceImpl implements ApproveService {
     
     @Override
     public List<Map<String, Object>> getApproveList(Map<String, Object> params, int offset, int limit) {
-        return approveMapper.getApproveList(params, offset, limit);
+        System.out.println("[DEBUG] ApproveService.getApproveList 查询参数: " + params);
+        List<Map<String, Object>> result = approveMapper.getApproveList(params, offset, limit);
+        System.out.println("[DEBUG] ApproveService.getApproveList 查询结果数量: " + (result != null ? result.size() : 0));
+        return result;
     }
     
     @Override
     public int countApproves(Map<String, Object> params) {
-        return approveMapper.countApproves(params);
+        System.out.println("[DEBUG] ApproveService.countApproves 查询参数: " + params);
+        int count = approveMapper.countApproves(params);
+        System.out.println("[DEBUG] ApproveService.countApproves 查询结果: " + count);
+        return count;
+    }
+    
+    @Override
+    public List<Approve> getAllApproves() {
+        return approveMapper.findAll();
     }
 } 

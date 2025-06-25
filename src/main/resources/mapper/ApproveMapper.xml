@@ -107,13 +107,16 @@
                    ELSE 'Unknown'
                END as ref_title,
                CASE
+                   WHEN a.type = 'borrow' THEN (SELECT d.code FROM document d JOIN borrow b ON d.id = b.document_id WHERE b.id = a.ref_id)
+                   WHEN a.type = 'void' THEN (SELECT code FROM document WHERE id = a.ref_id)
+                   ELSE 'Unknown'
+               END as document_code,
+               CASE
                    WHEN a.status = 0 THEN '待审批'
                    WHEN a.status = 1 THEN '已通过'
                    WHEN a.status = 2 THEN '已拒绝'
                    ELSE '未知'
-               END as status_text,
-               a.apply_time as apply_time_str,
-               a.approve_time as approve_time_str
+               END as status_text
         FROM approve a
         LEFT JOIN user u1 ON a.applicant_id = u1.id
         LEFT JOIN user u2 ON a.approver_id = u2.id
@@ -153,5 +156,15 @@
                 AND a.approver_id = #{params.approverId}
             </if>
         </where>
+    </select>
+
+    <!-- 查询所有审批记录 -->
+    <select id="findAll" resultMap="approveMap">
+        SELECT a.*, 
+               u1.real_name as applicant_name,
+               u2.real_name as approver_name
+        FROM approve a
+        LEFT JOIN user u1 ON a.applicant_id = u1.id
+        LEFT JOIN user u2 ON a.approver_id = u2.id
     </select>
 </mapper> 

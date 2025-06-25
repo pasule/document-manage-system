@@ -121,6 +121,9 @@
                 <a href="${pageContext.request.contextPath}/document/approve-list?pending=true">待审批</a>
             </div>
             <div class="menu-item">
+                <a href="${pageContext.request.contextPath}/document/void-approve-list">待处理作废</a>
+            </div>
+            <div class="menu-item">
                 <a href="${pageContext.request.contextPath}/document/borrow-list">借阅管理</a>
             </div>
             <div class="menu-item">
@@ -146,6 +149,7 @@
                 <h3 style="margin-top: 0;">管理员待办事项</h3>
                 <ul>
                     <li><a href="${pageContext.request.contextPath}/document/approve-list?pending=true">待处理审批</a></li>
+                    <li><a href="${pageContext.request.contextPath}/document/void-approve-list">待处理作废审批</a></li>
                     <li><a href="${pageContext.request.contextPath}/document/borrow-list?status=0">待处理借阅申请</a></li>
                 </ul>
             </div>

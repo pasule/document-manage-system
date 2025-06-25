@@ -85,4 +85,11 @@ public interface DocumentService {
      * @return 符合条件的档案列表
      */
     List<Document> getDocumentsByFilter(String title, Long categoryId, Long secretLevelId, Long tagId, Integer status);
+    
+    /**
+     * 根据状态获取档案
+     * @param status 档案状态
+     * @return 符合状态的档案列表
+     */
+    List<Document> getDocumentsByStatus(Integer status);
 } 
