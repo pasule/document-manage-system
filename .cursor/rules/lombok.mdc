@@ -1,0 +1,7 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+lombok依赖已配置,不要手动加get,set方法
+

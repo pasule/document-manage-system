@@ -23,6 +23,11 @@
         VALUES (#{name}, #{code}, #{parentId}, #{level}, #{path}, #{description}, #{status}, #{createUser})
     </insert>
 
+    <insert id="insertArchiveCategory" parameterType="com.manage.entity.Category">
+        INSERT INTO archive_category (id, name)
+        VALUES (#{id}, #{name})
+    </insert>
+
     <update id="update" parameterType="com.manage.entity.Category">
         UPDATE category
         <set>
@@ -36,9 +41,16 @@
         </set>
         WHERE id = #{id}
     </update>
+    
+    <update id="updateArchiveCategory" parameterType="com.manage.entity.Category">
+        UPDATE archive_category
+        SET name = #{name}
+        WHERE id = #{id}
+    </update>
 
     <delete id="delete" parameterType="long">
-        DELETE FROM category WHERE id = #{id}
+        DELETE FROM category WHERE id = #{id};
+        DELETE FROM archive_category WHERE id = #{id};
     </delete>
 
 </mapper> 

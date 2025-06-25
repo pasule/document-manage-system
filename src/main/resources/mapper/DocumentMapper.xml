@@ -17,20 +17,68 @@
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
         <result property="description" column="description"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="secretLevelName" column="secret_level_name"/>
     </resultMap>
 
     <select id="selectAll" resultMap="DocumentResultMap">
-        SELECT * FROM document WHERE status != 0
+        SELECT d.*, c.name as category_name, s.name as secret_level_name 
+        FROM document d
+        LEFT JOIN category c ON d.category_id = c.id
+        LEFT JOIN secret_level s ON d.secret_level_id = s.id
+        WHERE d.status != 0
     </select>
+    
     <select id="selectByCreateUser" resultMap="DocumentResultMap">
-        SELECT * FROM document WHERE create_user = #{createUser} AND status != 0
+        SELECT d.*, c.name as category_name, s.name as secret_level_name 
+        FROM document d
+        LEFT JOIN category c ON d.category_id = c.id
+        LEFT JOIN secret_level s ON d.secret_level_id = s.id
+        WHERE d.create_user = #{createUser} AND d.status != 0
     </select>
+    
     <select id="selectBySecretLevelId" resultMap="DocumentResultMap">
-        SELECT * FROM document WHERE secret_level_id = #{secretLevelId} AND status != 0
+        SELECT d.*, c.name as category_name, s.name as secret_level_name 
+        FROM document d
+        LEFT JOIN category c ON d.category_id = c.id
+        LEFT JOIN secret_level s ON d.secret_level_id = s.id
+        WHERE d.secret_level_id = #{secretLevelId} AND d.status != 0
     </select>
+    
     <select id="selectRecycleBin" resultMap="DocumentResultMap">
-        SELECT * FROM document WHERE status = 0
+        SELECT d.*, c.name as category_name, s.name as secret_level_name 
+        FROM document d
+        LEFT JOIN category c ON d.category_id = c.id
+        LEFT JOIN secret_level s ON d.secret_level_id = s.id
+        WHERE d.status = 0
     </select>
+    
+    <!-- 根据筛选条件查询档案 -->
+    <select id="selectByFilter" parameterType="java.util.Map" resultMap="DocumentResultMap">
+        SELECT d.*, c.name as category_name, s.name as secret_level_name 
+        FROM document d
+        LEFT JOIN category c ON d.category_id = c.id
+        LEFT JOIN secret_level s ON d.secret_level_id = s.id
+        <where>
+            <if test="title != null and title != ''">
+                AND d.title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="categoryId != null">
+                AND d.category_id = #{categoryId}
+            </if>
+            <if test="secretLevelId != null">
+                AND d.secret_level_id = #{secretLevelId}
+            </if>
+            <if test="tagId != null">
+                <!-- 此处后续可以添加标签关联查询 -->
+            </if>
+            <if test="status != null">
+                AND d.status = #{status}
+            </if>
+        </where>
+        ORDER BY d.create_time DESC
+    </select>
+    
     <insert id="insert" parameterType="com.manage.entity.Document">
         INSERT INTO document (code, title, category_id, secret_level_id, status, file_url, page_count, size, owner_id, create_user, create_time, update_time, description)
         VALUES (#{code}, #{title}, #{categoryId}, #{secretLevelId}, #{status}, #{fileUrl}, #{pageCount}, #{size}, #{ownerId}, #{createUser}, #{createTime}, #{updateTime}, #{description})
@@ -49,9 +97,10 @@
         ]]>
 </select>
     <select id="selectById" resultType="com.manage.entity.Document">
-        SELECT d.*, s.name as secret_level_name
+        SELECT d.*, c.name as category_name, s.name as secret_level_name 
         FROM document d
-                 LEFT JOIN secret_level s ON d.secret_level_id = s.id
+        LEFT JOIN category c ON d.category_id = c.id
+        LEFT JOIN secret_level s ON d.secret_level_id = s.id
         WHERE d.id = #{id}
     </select>
 

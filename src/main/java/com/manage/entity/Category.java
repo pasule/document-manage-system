@@ -27,6 +27,22 @@ public class Category {
         return status == 1 ? "启用" : "停用";
     }
 
+    public Long getId() { return id; }
+    public Long getParentId() { return parentId; }
+    public Integer getLevel() { return level; }
+    public String getPath() { return path; }
+    public String getDescription() { return description; }
+    public Integer getStatus() { return status; }
     public String getName() { return name; }
     public String getCode() { return code; }
+    
+    // 添加 setter 方法
+    public void setId(Long id) { this.id = id; }
+    public void setName(String name) { this.name = name; }
+    public void setCode(String code) { this.code = code; }
+    public void setParentId(Long parentId) { this.parentId = parentId; }
+    public void setLevel(Integer level) { this.level = level; }
+    public void setPath(String path) { this.path = path; }
+    public void setDescription(String description) { this.description = description; }
+    public void setStatus(Integer status) { this.status = status; }
 }

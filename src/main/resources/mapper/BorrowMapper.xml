@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.manage.mapper.BorrowMapper">
+    <!-- 基本字段映射 -->
+    <resultMap id="borrowMap" type="com.manage.entity.Borrow">
+        <id property="id" column="id"/>
+        <result property="documentId" column="document_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="borrowTime" column="borrow_time"/>
+        <result property="returnTime" column="return_time"/>
+        <result property="dueTime" column="due_time"/>
+        <result property="status" column="status"/>
+        <result property="approveId" column="approve_id"/>
+        <result property="purpose" column="purpose"/>
+        <result property="remark" column="remark"/>
+        <!-- 扩展字段 -->
+        <result property="documentTitle" column="document_title"/>
+        <result property="documentCode" column="document_code"/>
+        <result property="userName" column="user_name"/>
+        <result property="approveStatus" column="approve_status"/>
+    </resultMap>
+
+    <!-- 插入借阅记录 -->
+    <insert id="insert" parameterType="com.manage.entity.Borrow" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO borrow (document_id, user_id, borrow_time, due_time, status, approve_id, remark)
+        VALUES (#{documentId}, #{userId}, #{borrowTime}, #{dueTime}, #{status}, #{approveId}, #{remark})
+    </insert>
+    
+    <!-- 更新借阅记录 -->
+    <update id="update" parameterType="com.manage.entity.Borrow">
+        UPDATE borrow
+        <set>
+            <if test="status != null">status = #{status},</if>
+            <if test="returnTime != null">return_time = #{returnTime},</if>
+            <if test="approveId != null">approve_id = #{approveId},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+    
+    <!-- 更新审批ID -->
+    <update id="updateApproveId">
+        UPDATE borrow SET approve_id = #{approveId} WHERE id = #{borrowId}
+    </update>
+    
+    <!-- 根据ID查找借阅记录 -->
+    <select id="findById" resultMap="borrowMap">
+        SELECT b.*, 
+               d.title as document_title,
+               d.code as document_code,
+               u.real_name as user_name,
+               a.status as approve_status
+        FROM borrow b
+        LEFT JOIN document d ON b.document_id = d.id
+        LEFT JOIN user u ON b.user_id = u.id
+        LEFT JOIN approve a ON b.approve_id = a.id
+        WHERE b.id = #{id}
+    </select>
+    
+    <!-- 获取借阅详情 -->
+    <select id="getBorrowDetail" resultType="java.util.Map">
+        SELECT b.*,
+               d.title as document_title,
+               d.code as document_code,
+               u.real_name as user_name,
+               u.username,
+               a.status as approve_status,
+               CASE
+                   WHEN b.status = 0 THEN '申请中'
+                   WHEN b.status = 1 THEN '已借出'
+                   WHEN b.status = 2 THEN '已归还'
+                   WHEN b.status = 3 THEN '逾期'
+                   WHEN b.status = 4 THEN '已拒绝'
+                   ELSE '未知'
+               END as status_text,
+               CASE
+                   WHEN a.status = 0 THEN '待审批'
+                   WHEN a.status = 1 THEN '已通过'
+                   WHEN a.status = 2 THEN '已拒绝'
+                   ELSE '未知'
+               END as approve_status_text,
+               b.borrow_time as borrowTime,
+               b.return_time as returnTime,
+               b.due_time as dueTime
+        FROM borrow b
+        LEFT JOIN document d ON b.document_id = d.id
+        LEFT JOIN user u ON b.user_id = u.id
+        LEFT JOIN approve a ON b.approve_id = a.id
+        WHERE b.id = #{id}
+    </select>
+    
+    <!-- 根据文档ID查找借阅记录 -->
+    <select id="findByDocumentId" resultType="java.util.Map">
+        SELECT b.*,
+               u.real_name as user_name,
+               a.status as approve_status,
+               CASE
+                   WHEN b.status = 0 THEN '申请中'
+                   WHEN b.status = 1 THEN '已借出'
+                   WHEN b.status = 2 THEN '已归还'
+                   WHEN b.status = 3 THEN '逾期'
+                   WHEN b.status = 4 THEN '已拒绝'
+                   ELSE '未知'
+               END as status_text,
+               b.borrow_time as borrow_time_str,
+               b.return_time as return_time_str,
+               b.due_time as due_time_str
+        FROM borrow b
+        LEFT JOIN user u ON b.user_id = u.id
+        LEFT JOIN approve a ON b.approve_id = a.id
+        WHERE b.document_id = #{documentId}
+        ORDER BY b.borrow_time DESC
+    </select>
+    
+    <!-- 统计用户的活跃借阅记录数 -->
+    <select id="countActiveBorrows" resultType="int">
+        SELECT COUNT(*)
+        FROM borrow
+        WHERE document_id = #{documentId}
+          AND user_id = #{userId}
+          AND status IN (0, 1, 3) <!-- 申请中、已借出、逾期 -->
+    </select>
+    
+    <!-- 获取借阅列表 -->
+    <select id="getBorrowList" resultType="java.util.Map">
+        SELECT b.*,
+               d.id as document_id,
+               d.title as document_title,
+               d.code as document_code,
+               u.real_name as user_name,
+               a.status as approve_status,
+               CASE
+                   WHEN b.status = 0 THEN '申请中'
+                   WHEN b.status = 1 THEN '已借出'
+                   WHEN b.status = 2 THEN '已归还'
+                   WHEN b.status = 3 THEN '逾期'
+                   WHEN b.status = 4 THEN '已拒绝'
+                   ELSE '未知'
+               END as status_text,
+               b.borrow_time as borrowTime,
+               b.return_time as returnTime,
+               b.due_time as dueTime
+        FROM borrow b
+        LEFT JOIN document d ON b.document_id = d.id
+        LEFT JOIN user u ON b.user_id = u.id
+        LEFT JOIN approve a ON b.approve_id = a.id
+        <where>
+            <if test="params.status != null">
+                AND b.status = #{params.status}
+            </if>
+            <if test="params.userId != null">
+                AND b.user_id = #{params.userId}
+            </if>
+            <if test="params.documentTitle != null and params.documentTitle != ''">
+                AND d.title LIKE CONCAT('%', #{params.documentTitle}, '%')
+            </if>
+        </where>
+        ORDER BY b.borrow_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 统计借阅记录数 -->
+    <select id="countBorrows" resultType="int">
+        SELECT COUNT(*)
+        FROM borrow b
+        LEFT JOIN document d ON b.document_id = d.id
+        <where>
+            <if test="params.status != null">
+                AND b.status = #{params.status}
+            </if>
+            <if test="params.userId != null">
+                AND b.user_id = #{params.userId}
+            </if>
+            <if test="params.documentTitle != null and params.documentTitle != ''">
+                AND d.title LIKE CONCAT('%', #{params.documentTitle}, '%')
+            </if>
+        </where>
+    </select>
+</mapper> 

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.manage.mapper.ApproveMapper">
+    <!-- 基本字段映射 -->
+    <resultMap id="approveMap" type="com.manage.entity.Approve">
+        <id property="id" column="id"/>
+        <result property="type" column="type"/>
+        <result property="refId" column="ref_id"/>
+        <result property="applicantId" column="applicant_id"/>
+        <result property="approverId" column="approver_id"/>
+        <result property="status" column="status"/>
+        <result property="applyTime" column="apply_time"/>
+        <result property="approveTime" column="approve_time"/>
+        <result property="remark" column="remark"/>
+        <!-- 扩展字段 -->
+        <result property="applicantName" column="applicant_name"/>
+        <result property="approverName" column="approver_name"/>
+        <result property="refTitle" column="ref_title"/>
+    </resultMap>
+
+    <!-- 插入审批记录 -->
+    <insert id="insert" parameterType="com.manage.entity.Approve" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO approve (type, ref_id, applicant_id, approver_id, status, apply_time, approve_time, remark)
+        VALUES (#{type}, #{refId}, #{applicantId}, #{approverId}, #{status}, #{applyTime}, #{approveTime}, #{remark})
+    </insert>
+    
+    <!-- 更新审批记录 -->
+    <update id="update" parameterType="com.manage.entity.Approve">
+        UPDATE approve
+        <set>
+            <if test="status != null">status = #{status},</if>
+            <if test="approveTime != null">approve_time = #{approveTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+    
+    <!-- 根据ID查找审批记录 -->
+    <select id="findById" resultMap="approveMap">
+        SELECT a.*, 
+               u1.real_name as applicant_name,
+               u2.real_name as approver_name
+        FROM approve a
+        LEFT JOIN user u1 ON a.applicant_id = u1.id
+        LEFT JOIN user u2 ON a.approver_id = u2.id
+        WHERE a.id = #{id}
+    </select>
+    
+    <!-- 获取审批详情 -->
+    <select id="getApproveDetail" resultType="java.util.Map">
+        SELECT a.*,
+               u1.real_name as applicant_name,
+               u2.real_name as approver_name,
+               CASE
+                   WHEN a.type = 'borrow' THEN (SELECT d.title FROM document d JOIN borrow b ON d.id = b.document_id WHERE b.id = a.ref_id)
+                   WHEN a.type = 'void' THEN (SELECT title FROM document WHERE id = a.ref_id)
+                   ELSE 'Unknown'
+               END as ref_title,
+               CASE
+                   WHEN a.type = 'borrow' THEN (SELECT d.code FROM document d JOIN borrow b ON d.id = b.document_id WHERE b.id = a.ref_id)
+                   WHEN a.type = 'void' THEN (SELECT code FROM document WHERE id = a.ref_id)
+                   ELSE 'Unknown'
+               END as document_code,
+               CASE
+                   WHEN a.status = 0 THEN '待审批'
+                   WHEN a.status = 1 THEN '已通过'
+                   WHEN a.status = 2 THEN '已拒绝'
+                   ELSE '未知'
+               END as status_text
+        FROM approve a
+        LEFT JOIN user u1 ON a.applicant_id = u1.id
+        LEFT JOIN user u2 ON a.approver_id = u2.id
+        WHERE a.id = #{id}
+    </select>
+    
+    <!-- 根据文档ID查找审批记录 -->
+    <select id="findByDocumentId" resultType="java.util.Map">
+        SELECT a.*,
+               u1.real_name as applicant_name,
+               u2.real_name as approver_name,
+               CASE
+                   WHEN a.status = 0 THEN '待审批'
+                   WHEN a.status = 1 THEN '已通过'
+                   WHEN a.status = 2 THEN '已拒绝'
+                   ELSE '未知'
+               END as status_text,
+               a.apply_time as apply_time_str,
+               a.approve_time as approve_time_str
+        FROM approve a
+        LEFT JOIN user u1 ON a.applicant_id = u1.id
+        LEFT JOIN user u2 ON a.approver_id = u2.id
+        WHERE (a.type = 'void' AND a.ref_id = #{documentId})
+           OR (a.type = 'borrow' AND a.ref_id IN (SELECT id FROM borrow WHERE document_id = #{documentId}))
+        ORDER BY a.apply_time DESC
+    </select>
+    
+    <!-- 获取审批列表 -->
+    <select id="getApproveList" resultType="java.util.Map">
+        SELECT a.*,
+               u1.real_name as applicant_name,
+               u2.real_name as approver_name,
+               CASE
+                   WHEN a.type = 'borrow' THEN (SELECT d.title FROM document d JOIN borrow b ON d.id = b.document_id WHERE b.id = a.ref_id)
+                   WHEN a.type = 'void' THEN (SELECT title FROM document WHERE id = a.ref_id)
+                   ELSE 'Unknown'
+               END as ref_title,
+               CASE
+                   WHEN a.status = 0 THEN '待审批'
+                   WHEN a.status = 1 THEN '已通过'
+                   WHEN a.status = 2 THEN '已拒绝'
+                   ELSE '未知'
+               END as status_text,
+               a.apply_time as apply_time_str,
+               a.approve_time as approve_time_str
+        FROM approve a
+        LEFT JOIN user u1 ON a.applicant_id = u1.id
+        LEFT JOIN user u2 ON a.approver_id = u2.id
+        <where>
+            <if test="params.type != null">
+                AND a.type = #{params.type}
+            </if>
+            <if test="params.status != null">
+                AND a.status = #{params.status}
+            </if>
+            <if test="params.applicantId != null">
+                AND a.applicant_id = #{params.applicantId}
+            </if>
+            <if test="params.approverId != null">
+                AND a.approver_id = #{params.approverId}
+            </if>
+        </where>
+        ORDER BY a.apply_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 统计审批记录数 -->
+    <select id="countApproves" resultType="int">
+        SELECT COUNT(*)
+        FROM approve a
+        <where>
+            <if test="params.type != null">
+                AND a.type = #{params.type}
+            </if>
+            <if test="params.status != null">
+                AND a.status = #{params.status}
+            </if>
+            <if test="params.applicantId != null">
+                AND a.applicant_id = #{params.applicantId}
+            </if>
+            <if test="params.approverId != null">
+                AND a.approver_id = #{params.approverId}
+            </if>
+        </where>
+    </select>
+</mapper> 

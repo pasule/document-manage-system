@@ -21,22 +21,29 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean register(User user) {
+    public Long register(User user) {
         // 检查用户名是否已存在
         User existingUser = userMapper.findByUsername(user.getUsername());
         if (existingUser != null) {
-            return false;
+            return null;
         }
         
         // 设置默认状态为启用
         user.setStatus(1);
         
         // 插入新用户
-        return userMapper.insert(user) > 0;
+        int result = userMapper.insert(user);
+        return result > 0 ? user.getId() : null;
     }
 
     @Override
     public User getUserById(Long id) {
         return userMapper.findById(id);
+    }
+    
+    @Override
+    public boolean isAdmin(Long userId) {
+        User user = userMapper.findById(userId);
+        return user != null && user.getRole() != null && user.getRole() == 2; // 2表示管理员
     }
 }

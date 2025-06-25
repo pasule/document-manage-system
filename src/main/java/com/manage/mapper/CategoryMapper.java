@@ -21,4 +21,14 @@ public interface CategoryMapper {
     Category findByName(String name);
 
     Category findByCode(String code);
+    
+    /**
+     * 将分类同步添加到 archive_category 表
+     */
+    void insertArchiveCategory(Category category);
+    
+    /**
+     * 同步更新 archive_category 表中的数据
+     */
+    void updateArchiveCategory(Category category);
 } 

@@ -18,7 +18,9 @@
     <mvc:annotation-driven/>
 
     <!-- 配置静态资源处理 -->
-    <mvc:resources mapping="/static/**" location="/static/"/>
+    <mvc:resources mapping="/static/**" location="/static"/>
+    <mvc:resources mapping="/uploads/**" location="/uploads/"/>
+    <mvc:resources mapping="/files/**" location="file:/F:/code/JavaEE_Homework/document-manage-system/src/main/webapp/uploads/"/>
     
     <!-- 配置视图解析器 -->
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -50,6 +52,7 @@
     
     <!-- 配置文件上传解析器 -->
     <bean id="multipartResolver" class="org.springframework.web.multipart.support.StandardServletMultipartResolver">
+        
     </bean>
 
 </beans>

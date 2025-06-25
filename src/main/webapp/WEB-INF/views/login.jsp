@@ -61,6 +61,29 @@
             text-align: center;
             margin-top: 15px;
         }
+        .login-options {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        .login-option {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .login-option.active {
+            background-color: #e0f7fa;
+            font-weight: bold;
+        }
+        .admin-login-info {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #777;
+            text-align: center;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -71,7 +94,19 @@
             <div class="error-message">${error}</div>
         </c:if>
         
+        <div class="login-options">
+            <div class="login-option active" id="user-login-option" onclick="switchLoginType('user')">普通用户登录</div>
+            <div class="login-option" id="admin-login-option" onclick="switchLoginType('admin')">管理员登录</div>
+        </div>
+        
+        <div id="admin-login-info" class="admin-login-info">
+            管理员账号: admin<br>
+            默认密码: 123456
+        </div>
+        
         <form action="${pageContext.request.contextPath}/login" method="post">
+            <input type="hidden" id="isAdmin" name="isAdmin" value="0">
+            
             <div class="form-group">
                 <label for="username">用户名:</label>
                 <input type="text" id="username" name="username" required>
@@ -91,5 +126,25 @@
             还没有账号？<a href="${pageContext.request.contextPath}/register">立即注册</a>
         </div>
     </div>
+    
+    <script>
+        function switchLoginType(type) {
+            if (type === 'admin') {
+                document.getElementById('admin-login-option').classList.add('active');
+                document.getElementById('user-login-option').classList.remove('active');
+                document.getElementById('isAdmin').value = '1';
+                document.getElementById('admin-login-info').style.display = 'block';
+                document.getElementById('username').value = 'admin';
+                document.getElementById('password').value = '123456';
+            } else {
+                document.getElementById('user-login-option').classList.add('active');
+                document.getElementById('admin-login-option').classList.remove('active');
+                document.getElementById('isAdmin').value = '0';
+                document.getElementById('admin-login-info').style.display = 'none';
+                document.getElementById('username').value = '';
+                document.getElementById('password').value = '';
+            }
+        }
+    </script>
 </body>
 </html>
