@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/category")
@@ -18,7 +19,7 @@ public class CategoryController {
 
     @GetMapping("/list")
     public String list(Model model) {
-        List<Category> categories = categoryService.getAllCategories();
+        List<Map<String, Object>> categories = categoryService.getAllCategories();
         model.addAttribute("categories", categories);
         return "category/list";
     }
@@ -46,7 +47,21 @@ public class CategoryController {
 
     @GetMapping("/edit/{id}")
     public String editPage(@PathVariable Long id, Model model) {
-        Category category = categoryService.getCategoryById(id);
+        Map<String, Object> categoryMap = categoryService.getCategoryById(id);
+        
+        // 将 Map 转换为 Category 对象以便表单绑定
+        Category category = new Category();
+        if (categoryMap != null) {
+            category.setId((Long) categoryMap.get("id"));
+            category.setName((String) categoryMap.get("name"));
+            category.setCode((String) categoryMap.get("code"));
+            category.setParentId((Long) categoryMap.get("parentId"));
+            category.setLevel((Integer) categoryMap.get("level"));
+            category.setPath((String) categoryMap.get("path"));
+            category.setDescription((String) categoryMap.get("description"));
+            category.setStatus((Integer) categoryMap.get("status"));
+        }
+        
         model.addAttribute("category", category);
         model.addAttribute("categories", categoryService.getAllCategories());
         return "category/edit";

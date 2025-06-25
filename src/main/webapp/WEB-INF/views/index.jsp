@@ -10,125 +10,146 @@
             padding: 0;
             background-color: #f4f4f4;
         }
-        .container {
-            width: 80%;
-            margin: 0 auto;
-            padding: 20px;
-        }
         .header {
             background-color: #333;
             color: white;
-            padding: 10px 0;
-            text-align: center;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
         }
         .user-info {
-            float: right;
-            margin-right: 20px;
-            color: white;
+            display: flex;
+            align-items: center;
         }
-        .menu {
-            background-color: #444;
-            overflow: hidden;
+        .user-info span {
+            margin-right: 15px;
         }
-        .menu a {
-            float: left;
-            display: block;
+        .user-info a {
             color: white;
-            text-align: center;
-            padding: 14px 16px;
             text-decoration: none;
         }
-        .menu a:hover {
-            background-color: #ddd;
-            color: black;
+        .user-info a:hover {
+            text-decoration: underline;
+        }
+        .sidebar {
+            width: 200px;
+            background-color: #333;
+            color: white;
+            position: fixed;
+            height: 100%;
+            padding-top: 20px;
+        }
+        .menu-item {
+            padding: 10px 20px;
+            border-bottom: 1px solid #444;
+        }
+        .menu-item:hover {
+            background-color: #444;
+        }
+        .menu-item a {
+            color: white;
+            text-decoration: none;
+            display: block;
         }
         .content {
+            margin-left: 200px;
             padding: 20px;
-            background-color: white;
-            margin-top: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
-        .feature-box {
-            border: 1px solid #ddd;
-            padding: 15px;
-            margin: 10px;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-            width: 28%;
-            float: left;
-            min-height: 150px;
+        .admin-badge {
+            background-color: #ff9800;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 5px;
         }
-        .feature-box h3 {
-            margin-top: 0;
-            color: #333;
-        }
-        .clearfix::after {
-            content: "";
-            clear: both;
-            display: table;
+        .menu-category {
+            padding: 10px 20px;
+            background-color: #222;
+            font-weight: bold;
+            border-bottom: 1px solid #444;
         }
     </style>
 </head>
 <body>
     <div class="header">
+        <h1>档案管理系统</h1>
         <div class="user-info">
             <c:choose>
-                <c:when test="${not empty sessionScope.username}">
-                    欢迎，${sessionScope.realName != null ? sessionScope.realName : sessionScope.username} | 
-                    <a href="${pageContext.request.contextPath}/logout" style="color: white;">退出</a>
+                <c:when test="${not empty username}">
+                    <span>欢迎, ${realName}
+                        <c:if test="${isAdmin}">
+                            <span class="admin-badge">管理员</span>
+                        </c:if>
+                    </span>
+                    <a href="${pageContext.request.contextPath}/logout">退出登录</a>
                 </c:when>
                 <c:otherwise>
-                    <a href="${pageContext.request.contextPath}/login" style="color: white;">登录</a> | 
-                    <a href="${pageContext.request.contextPath}/register" style="color: white;">注册</a>
+                    <a href="${pageContext.request.contextPath}/login">登录</a>
+                    <a href="${pageContext.request.contextPath}/register" style="margin-left: 10px;">注册</a>
                 </c:otherwise>
             </c:choose>
         </div>
-        <h1>档案管理系统</h1>
     </div>
     
-    <div class="menu">
-        <a href="${pageContext.request.contextPath}/">首页</a>
-        <a href="${pageContext.request.contextPath}/document/list">档案列表</a>
-        <a href="${pageContext.request.contextPath}/document/my">我的档案</a>
-        <a href="${pageContext.request.contextPath}/document/upload">上传档案</a>
-        <a href="${pageContext.request.contextPath}/document/recycle">回收站</a>
-        <a href="${pageContext.request.contextPath}/stats/count">统计信息</a>
-        <a href="${pageContext.request.contextPath}/tag/list">标签管理</a>
-        <a href="${pageContext.request.contextPath}/category/list">分类管理</a>
-        <a href="${pageContext.request.contextPath}/rule/list">编号规则管理</a>
-    </div>
-    
-    <div class="container">
-        <div class="content">
-            <h2>欢迎使用档案管理系统</h2>
-            
-            <c:if test="${empty sessionScope.username}">
-                <p>请先 <a href="${pageContext.request.contextPath}/login">登录</a> 或 <a href="${pageContext.request.contextPath}/register">注册</a> 以使用系统功能。</p>
-            </c:if>
-            
-            <c:if test="${not empty sessionScope.username}">
-                <div class="clearfix">
-                    <div class="feature-box">
-                        <h3>档案管理</h3>
-                        <p>查看、上传、管理各类档案文件。</p>
-                        <a href="${pageContext.request.contextPath}/document/list">进入档案列表</a>
-                    </div>
-                    
-                    <div class="feature-box">
-                        <h3>我的档案</h3>
-                        <p>管理您创建的档案文件。</p>
-                        <a href="${pageContext.request.contextPath}/document/my">查看我的档案</a>
-                    </div>
-                    
-                    <div class="feature-box">
-                        <h3>统计信息</h3>
-                        <p>查看系统档案统计数据。</p>
-                        <a href="${pageContext.request.contextPath}/stats/count">查看统计</a>
-                    </div>
-                </div>
-            </c:if>
+    <div class="sidebar">
+        <div class="menu-category">档案管理</div>
+        <div class="menu-item">
+            <a href="${pageContext.request.contextPath}/document/list">档案列表</a>
         </div>
+        <div class="menu-item">
+            <a href="${pageContext.request.contextPath}/document/upload">上传档案</a>
+        </div>
+        <div class="menu-item">
+            <a href="${pageContext.request.contextPath}/document/my">我的档案</a>
+        </div>
+        <div class="menu-item">
+            <a href="${pageContext.request.contextPath}/document/borrow-list?mine=true">我的借阅</a>
+        </div>
+        <div class="menu-item">
+            <a href="${pageContext.request.contextPath}/document/recycle">回收站</a>
+        </div>
+        
+        <c:if test="${isAdmin}">
+            <div class="menu-category">管理员功能</div>
+            <div class="menu-item">
+                <a href="${pageContext.request.contextPath}/document/approve-list?pending=true">待审批</a>
+            </div>
+            <div class="menu-item">
+                <a href="${pageContext.request.contextPath}/document/borrow-list">借阅管理</a>
+            </div>
+            <div class="menu-item">
+                <a href="${pageContext.request.contextPath}/category/list">分类管理</a>
+            </div>
+            <div class="menu-item">
+                <a href="${pageContext.request.contextPath}/tag/list">标签管理</a>
+            </div>
+        </c:if>
+        
+        <div class="menu-category">系统设置</div>
+        <div class="menu-item">
+            <a href="${pageContext.request.contextPath}/rule/list">档号规则</a>
+        </div>
+    </div>
+    
+    <div class="content">
+        <h2>欢迎使用档案管理系统</h2>
+        <p>请从左侧菜单选择相应功能进行操作。</p>
+        
+        <c:if test="${isAdmin}">
+            <div style="margin-top: 20px; padding: 15px; background-color: #e1f5fe; border-radius: 5px; border-left: 4px solid #03a9f4;">
+                <h3 style="margin-top: 0;">管理员待办事项</h3>
+                <ul>
+                    <li><a href="${pageContext.request.contextPath}/document/approve-list?pending=true">待处理审批</a></li>
+                    <li><a href="${pageContext.request.contextPath}/document/borrow-list?status=0">待处理借阅申请</a></li>
+                </ul>
+            </div>
+        </c:if>
     </div>
 </body>
 </html>

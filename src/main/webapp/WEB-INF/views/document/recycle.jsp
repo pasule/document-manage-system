@@ -26,8 +26,8 @@
             <td>${doc.title}</td>
             <td>${doc.secretLevelName}</td>
             <td>
-                <a href="#" class="action-btn" style="background:#388e3c;">还原</a>
-                <a href="#" class="action-btn">彻底删除</a>
+                <a href="${pageContext.request.contextPath}/document/restore?id=${doc.id}" class="action-btn" style="background:#388e3c;" onclick="return confirm('确定要还原此档案吗？')">还原</a>
+                <a href="${pageContext.request.contextPath}/document/permanent-delete?id=${doc.id}" class="action-btn" onclick="return confirm('确定要永久删除此档案吗？此操作不可恢复！')">彻底删除</a>
             </td>
         </tr>
     </c:forEach>

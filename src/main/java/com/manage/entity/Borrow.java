@@ -13,6 +13,7 @@ public class Borrow {
     private LocalDateTime dueTime;    // 应还时间
     private Integer status;          // 状态（0申请中 1已借出 2已归还 3逾期）
     private Long approveId;          // 审批记录ID
+    private String purpose;          // 借阅目的（注意：数据库表中已不存在此字段，仅用于实体类）
     private String remark;           // 备注
     
     // 扩展字段
