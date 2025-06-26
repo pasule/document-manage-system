@@ -49,6 +49,12 @@
         </div>
     </div>
     
+    <c:if test="${not empty param.error}">
+        <div style="background-color: #ffebee; border: 1px solid #ef9a9a; color: #c62828; padding: 10px; margin-bottom: 20px; border-radius: 4px;">
+            ${param.error}
+        </div>
+    </c:if>
+    
     <div class="filter-section">
         <form action="${pageContext.request.contextPath}/document/list" method="get" style="width: 100%;">
             <div style="display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 15px;">

@@ -24,4 +24,9 @@ public interface DocumentMapper {
      * @return 符合条件的档案列表
      */
     List<Document> selectByFilter(Map<String, Object> params);
+
+    /**
+     * 根据状态查询档案
+     */
+    List<Document> findByStatus(Integer status);
 } 

@@ -15,7 +15,7 @@ public class Approve {
     private LocalDateTime approveTime; // 审批时间
     private String remark;           // 备注
     
-    // 扩展字段
+    // 扩展字段，不在数据库表中
     private String applicantName;     // 申请人姓名
     private String approverName;      // 审批人姓名
     private String statusText;        // 状态文本

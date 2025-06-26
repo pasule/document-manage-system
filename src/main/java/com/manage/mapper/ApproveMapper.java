@@ -42,4 +42,9 @@ public interface ApproveMapper {
      * 统计审批记录数
      */
     int countApproves(@Param("params") Map<String, Object> params);
+
+    /**
+     * 查询所有审批记录
+     */
+    List<Approve> findAll();
 } 
