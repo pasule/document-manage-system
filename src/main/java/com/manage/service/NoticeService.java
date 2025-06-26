@@ -26,5 +26,6 @@ public interface NoticeService {
     // 删除通知
     void deleteNotice(Long id);
 
-    List<Notice> getNoticeByFilter(String title, Integer status, Integer priority);
+
+    List<Notice> getNoticeByFilter(String title, Integer status, Integer priority,Long userId);
 }

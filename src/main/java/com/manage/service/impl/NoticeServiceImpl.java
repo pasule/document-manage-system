@@ -86,7 +86,7 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    public List<Notice> getNoticeByFilter(String title, Integer status, Integer priority) {
+    public List<Notice> getNoticeByFilter(String title, Integer status, Integer priority,Long userId) {
         Map<String, Object> map = new HashMap<>();
 
         if (title != null && title.length() > 0) {
@@ -97,6 +97,9 @@ public class NoticeServiceImpl implements NoticeService {
         }
         if (priority != null) {
             map.put("priority", priority);
+        }
+        if (userId != null) {
+            map.put("userId", userId);
         }
         return noticeMapper.selectByFilter(map);
     }

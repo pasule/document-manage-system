@@ -63,6 +63,10 @@
             <if test="priority != null">
                 AND n.priority = #{priority}
             </if>
+            <if test="userId != null">
+                AND n.receiver_id = #{userId}
+            </if>
+
         </where>
         ORDER BY n.send_time DESC
 
