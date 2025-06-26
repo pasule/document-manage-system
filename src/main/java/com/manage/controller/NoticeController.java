@@ -4,6 +4,7 @@ import com.manage.entity.Notice;
 import com.manage.entity.User;
 import com.manage.service.NoticeService;
 import com.manage.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,8 +31,14 @@ public class NoticeController {
                        @RequestParam(value = "priority", required = false) Integer priority,
                        @RequestParam(value = "page", defaultValue = "1") int page,
                        @RequestParam(value = "size", defaultValue = "10") int size,
-                       Model model) {
-        List<Notice> allNotices = noticeService.getNoticeByFilter(title,status,priority);
+                       Model model, HttpSession session) {
+        Object userIdObj = session.getAttribute("userId");
+        if (userIdObj == null) {
+            // 未登录，跳转到登录页
+            return "redirect:/login";
+        }
+        Long userId = (Long) userIdObj;
+        List<Notice> allNotices = noticeService.getNoticeByFilter(title,status,priority,userId);
         // 分页处理
         int total = allNotices.size();
         int totalPages = (int) Math.ceil((double) total / size);

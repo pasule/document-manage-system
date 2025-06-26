@@ -96,7 +96,7 @@
             </c:choose>
         </div>
     </div>
-    
+
     <div class="sidebar">
         <div class="menu-category">档案管理</div>
         <div class="menu-item">
@@ -134,6 +134,9 @@
             </div>
             <div class="menu-item">
                 <a href="${pageContext.request.contextPath}/tag/list">标签管理</a>
+            </div>
+            <div class="menu-item">
+                <a href="${pageContext.request.contextPath}/approvalAlerts/list">审批提醒</a>
             </div>
         </c:if>
 

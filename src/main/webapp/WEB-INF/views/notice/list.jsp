@@ -225,8 +225,8 @@
             <th>类型</th>
             <th>优先级</th>
             <th>状态</th>
-            <th>发送人</th>
-            <th>接收人</th>
+            <%--<th>发送人</th>--%>
+            <%--<th>接收人</th>--%>
             <th>发送时间</th>
             <th>阅读时间</th>
             <th>操作</th>
@@ -270,8 +270,8 @@
                                 </c:choose>
                             </span>
                 </td>
-                <td>${notice.senderId}</td>
-                <td>${notice.receiverId}</td>
+                <%--<td>${notice.senderId}</td>--%>
+                <%--<td>${notice.receiverId}</td>--%>
                 <td><fmt:formatDate value="${notice.sendTime}" pattern="yyyy-MM-dd HH:mm"/></td>
                 <td>
                     <c:choose>
