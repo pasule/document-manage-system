@@ -179,10 +179,11 @@
     <h2>消息通知</h2>
 
     <div class="action-buttons">
+        <c:if test="${isAdmin}">
         <a href="${pageContext.request.contextPath}/notice/send" class="btn btn-primary">发送新通知</a>
+        </c:if>
         <button type="button" class="btn btn-secondary" id="batchArchiveBtn">批量归档</button>
     </div>
-
     <!-- 搜索区域 -->
     <form class="search-form">
         <div class="form-group">
