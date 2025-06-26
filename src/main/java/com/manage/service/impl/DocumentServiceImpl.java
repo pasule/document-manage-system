@@ -123,4 +123,9 @@ public class DocumentServiceImpl implements DocumentService {
         
         return documentMapper.selectByFilter(params);
     }
+
+    @Override
+    public List<Document> getDocumentsByStatus(Integer status) {
+        return documentMapper.findByStatus(status);
+    }
 }

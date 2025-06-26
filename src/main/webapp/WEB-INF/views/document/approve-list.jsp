@@ -62,6 +62,8 @@
         <div class="filter-group">
             <a href="${pageContext.request.contextPath}/document/approve-list?mine=true" class="btn-filter">我的申请</a>
             <a href="${pageContext.request.contextPath}/document/approve-list?pending=true" class="btn-filter" style="margin-left: 10px;">待我审批</a>
+            <a href="${pageContext.request.contextPath}/document/void-approve-list" class="btn-filter" style="margin-left: 10px; background-color: #e91e63;">作废审批</a>
+            <a href="${pageContext.request.contextPath}/document/diagnose-user" class="btn-filter" style="margin-left: 10px; background-color: #ff9800;">诊断</a>
         </div>
     </div>
     
@@ -106,17 +108,32 @@
                     </td>
                     <td>${approve.remark != null ? approve.remark : '-'}</td>
                     <td class="action-links">
+                        <!-- 调试信息 -->
+                        <div style="font-size: 10px; color: #999;">
+                            当前用户ID: ${currentUserId}, 审批人ID: ${approve.approverId}
+                        </div>
+                        
                         <c:choose>
                             <c:when test="${approve.type == 'borrow'}">
                                 <a href="${pageContext.request.contextPath}/document/view-borrow?id=${approve.refId}" class="action-link">查看借阅</a>
                             </c:when>
                             <c:when test="${approve.type == 'void'}">
-                                <a href="${pageContext.request.contextPath}/document/view?id=${approve.refId}" class="action-link">查看档案</a>
+                                <a href="${pageContext.request.contextPath}/document/view-void?id=${approve.id}" class="action-link">查看作废 [ID:${approve.id}]</a>
                             </c:when>
                         </c:choose>
                         
                         <c:if test="${approve.status == 0 && currentUserId == approve.approverId}">
-                            <a href="${pageContext.request.contextPath}/document/process-approve?id=${approve.id}" class="action-link">处理</a>
+                            <c:choose>
+                                <c:when test="${approve.type == 'borrow'}">
+                                    <a href="${pageContext.request.contextPath}/document/approve-borrow?id=${approve.refId}" class="action-link">处理</a>
+                                </c:when>
+                                <c:when test="${approve.type == 'void'}">
+                                    <a href="${pageContext.request.contextPath}/document/approve-void?id=${approve.id}" class="action-link">处理作废</a>
+                                </c:when>
+                                <c:otherwise>
+                                    <a href="${pageContext.request.contextPath}/document/process-approve?id=${approve.id}" class="action-link">处理</a>
+                                </c:otherwise>
+                            </c:choose>
                         </c:if>
                     </td>
                 </tr>

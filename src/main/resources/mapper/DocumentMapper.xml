@@ -116,4 +116,18 @@
         </set>
         WHERE id = #{id}
     </update>
+    
+    <!-- 根据主键删除档案 -->
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        DELETE FROM document WHERE id = #{id}
+    </delete>
+
+    <!-- 根据状态查询档案 -->
+    <select id="findByStatus" resultMap="DocumentResultMap">
+        SELECT d.*, c.name as category_name, s.name as secret_level_name
+        FROM document d
+        LEFT JOIN category c ON d.category_id = c.id
+        LEFT JOIN secret_level s ON d.secret_level_id = s.id
+        WHERE d.status = #{status}
+    </select>
 </mapper> 

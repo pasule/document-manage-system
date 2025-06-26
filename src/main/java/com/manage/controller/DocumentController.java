@@ -299,16 +299,23 @@ public class DocumentController {
     }
 
     @GetMapping("/view")
-    public String viewDocument(@RequestParam("id") Long id, Model model, HttpSession session) {
+    public String viewDocument(@RequestParam(value = "id", required = false) Long id, Model model, HttpSession session) {
         // 检查登录
         Object userIdObj = session.getAttribute("userId");
         if (userIdObj == null) {
             return "redirect:/login";
         }
         
+        // 检查ID参数
+        if (id == null) {
+            model.addAttribute("error", "档案ID不能为空");
+            return "redirect:/document/list?error=档案ID不能为空";
+        }
+        
         Document document = documentService.getDocumentById(id);
         if (document == null) {
-            return "redirect:/document/list";
+            model.addAttribute("error", "档案不存在");
+            return "redirect:/document/list?error=档案不存在或已被删除";
         }
         
         // 获取相关借阅记录
@@ -882,16 +889,23 @@ public class DocumentController {
     
     // 查看借阅详情
     @GetMapping("/view-borrow")
-    public String viewBorrow(@RequestParam("id") Long borrowId, Model model, HttpSession session) {
+    public String viewBorrow(@RequestParam(value = "id", required = false) Long borrowId, Model model, HttpSession session) {
         // 检查登录
         Object userIdObj = session.getAttribute("userId");
         if (userIdObj == null) {
             return "redirect:/login";
         }
         
+        // 检查ID参数
+        if (borrowId == null) {
+            model.addAttribute("error", "借阅ID不能为空");
+            return "redirect:/document/borrow-list";
+        }
+        
         // 获取借阅记录
         Map<String, Object> borrow = borrowService.getBorrowDetail(borrowId);
         if (borrow == null) {
+            model.addAttribute("error", "借阅记录不存在");
             return "redirect:/document/borrow-list";
         }
         
@@ -1182,6 +1196,99 @@ public class DocumentController {
         }
     }
     
+    // 作废审批页面 - 专门处理
+    @GetMapping("/approve-void")
+    public String approveVoidForm(@RequestParam("id") Long approveId, Model model, HttpSession session) {
+        // 检查登录
+        Object userIdObj = session.getAttribute("userId");
+        if (userIdObj == null) {
+            return "redirect:/login";
+        }
+        Long userId = (Long) userIdObj;
+        
+        // 检查是否是管理员
+        Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
+        if (!Boolean.TRUE.equals(isAdmin)) {
+            model.addAttribute("error", "您没有权限进行此操作");
+            return "error";
+        }
+        
+        // 获取审批记录
+        Approve approve = approveService.getApproveById(approveId);
+        if (approve == null) {
+            model.addAttribute("error", "审批记录不存在");
+            return "error";
+        }
+        
+        // 检查类型
+        if (!"void".equals(approve.getType())) {
+            model.addAttribute("error", "非作废审批类型");
+            return "error";
+        }
+        
+        // 获取关联业务信息
+        Map<String, Object> approveDetail = approveService.getApproveDetail(approveId);
+        model.addAttribute("approve", approveDetail);
+        
+        return "document/approve-void";
+    }
+    
+    // 提交作废审批
+    @PostMapping("/approve-void")
+    public String submitApproveVoid(@RequestParam("approveId") Long approveId,
+                                  @RequestParam("action") String action,
+                                  @RequestParam("approveRemark") String approveRemark,
+                                  HttpSession session,
+                                  Model model) {
+        // 检查登录
+        Object userIdObj = session.getAttribute("userId");
+        if (userIdObj == null) {
+            return "redirect:/login";
+        }
+        Long userId = (Long) userIdObj;
+        
+        // 检查是否是管理员
+        Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
+        if (!Boolean.TRUE.equals(isAdmin)) {
+            model.addAttribute("error", "您没有权限进行此操作");
+            return "error";
+        }
+        
+        try {
+            // 获取审批记录
+            Approve approve = approveService.getApproveById(approveId);
+            if (approve == null) {
+                model.addAttribute("error", "审批记录不存在");
+                return "error";
+            }
+            
+            // 检查类型
+            if (!"void".equals(approve.getType())) {
+                model.addAttribute("error", "非作废审批类型");
+                return "error";
+            }
+            
+            // 更新审批状态
+            int approveStatus = "approve".equals(action) ? 1 : 2; // 1表示通过，2表示拒绝
+            approve.setStatus(approveStatus);
+            approve.setApproveTime(java.time.LocalDateTime.now());
+            approve.setRemark(approveRemark);
+            
+            approveService.updateApprove(approve);
+            
+            // 如果批准，则更新档案状态为作废(2)
+            if (approveStatus == 1) {
+                documentService.voidDocument(approve.getRefId());
+            }
+            
+            return "redirect:/document/approve-list";
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("error", "处理审批失败: " + e.getMessage());
+            return "error";
+        }
+    }
+    
     // 提交作废审批
     @PostMapping("/process-approve")
     public String submitProcessApprove(@RequestParam("approveId") Long approveId,
@@ -1235,6 +1342,219 @@ public class DocumentController {
             e.printStackTrace();
             model.addAttribute("error", "处理审批失败: " + e.getMessage());
             return "redirect:/document/approve-list";
+        }
+    }
+
+    // 诊断当前用户信息
+    @GetMapping("/diagnose-user")
+    public String diagnoseUser(Model model, HttpSession session) {
+        // 获取会话中的用户信息
+        Object userIdObj = session.getAttribute("userId");
+        Object isAdminObj = session.getAttribute("isAdmin");
+        Object usernameObj = session.getAttribute("username");
+        Object realNameObj = session.getAttribute("realName");
+        
+        // 构建诊断信息
+        StringBuilder info = new StringBuilder();
+        info.append("当前用户ID: ").append(userIdObj).append("<br>");
+        info.append("是否管理员: ").append(isAdminObj).append("<br>");
+        info.append("用户名: ").append(usernameObj).append("<br>");
+        info.append("真实姓名: ").append(realNameObj).append("<br>");
+        
+        // 获取待处理的审批
+        if (userIdObj != null) {
+            Long userId = (Long) userIdObj;
+            Map<String, Object> params = new HashMap<>();
+            params.put("approverId", userId);
+            params.put("status", 0); // 待审批
+            
+            List<Map<String, Object>> pendingApproves = approveService.getApproveList(params, 0, 100);
+            
+            info.append("<br><h3>待处理审批记录:</h3>");
+            if (pendingApproves.isEmpty()) {
+                info.append("无待处理审批<br>");
+            } else {
+                info.append("<table border='1'>");
+                info.append("<tr><th>ID</th><th>类型</th><th>申请人</th><th>审批人</th><th>审批人ID</th></tr>");
+                
+                for (Map<String, Object> approve : pendingApproves) {
+                    info.append("<tr>");
+                    info.append("<td>").append(approve.get("id")).append("</td>");
+                    info.append("<td>").append(approve.get("type")).append("</td>");
+                    info.append("<td>").append(approve.get("applicantName")).append("</td>");
+                    info.append("<td>").append(approve.get("approverName")).append("</td>");
+                    info.append("<td>").append(approve.get("approverId")).append("</td>");
+                    info.append("</tr>");
+                }
+                
+                info.append("</table>");
+            }
+        } else {
+            info.append("<br>用户未登录，无法获取审批信息");
+        }
+        
+        model.addAttribute("diagnosticInfo", info.toString());
+        return "document/diagnostic";
+    }
+
+    // 待处理作废审批列表
+    @GetMapping("/void-approve-list")
+    public String voidApproveList(@RequestParam(value = "page", defaultValue = "1") int page,
+                                 HttpSession session,
+                                 Model model) {
+        // 检查登录
+        Object userIdObj = session.getAttribute("userId");
+        if (userIdObj == null) {
+            return "redirect:/login";
+        }
+        Long userId = (Long) userIdObj;
+        
+        // 检查是否是管理员
+        Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
+        if (!Boolean.TRUE.equals(isAdmin)) {
+            model.addAttribute("error", "您没有权限访问此页面");
+            return "error";
+        }
+        
+        // 分页参数
+        int pageSize = 10;
+        int offset = (page - 1) * pageSize;
+        
+        // 查询条件：只查询待审批的作废申请
+        Map<String, Object> params = new HashMap<>();
+        params.put("type", "void");
+        params.put("status", 0); // 待审批
+        
+        // 查询作废审批记录
+        List<Map<String, Object>> voidApproves = approveService.getApproveList(params, offset, pageSize);
+        int total = approveService.countApproves(params);
+        
+        // 计算总页数
+        int totalPages = (int) Math.ceil((double) total / pageSize);
+        
+        model.addAttribute("voidApproves", voidApproves);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages > 0 ? totalPages : 1);
+        
+        return "document/void-approve-list";
+    }
+    
+    // 查看作废详情
+    @GetMapping("/view-void")
+    public String viewVoid(@RequestParam(value = "id", required = false) Long approveId, Model model, HttpSession session) {
+        // 检查登录
+        Object userIdObj = session.getAttribute("userId");
+        if (userIdObj == null) {
+            return "redirect:/login";
+        }
+        
+        // 调试信息
+        System.out.println("[DEBUG] 查看作废详情，审批ID: " + approveId);
+        System.out.println("[DEBUG] 请求参数: " + approveId);
+        
+        try {
+            // 检查ID参数
+            if (approveId == null) {
+                System.out.println("[ERROR] 审批ID为空");
+                model.addAttribute("error", "审批ID不能为空");
+                return "redirect:/document/approve-list?error=审批ID不能为空";
+            }
+            
+            // 获取审批记录
+            Map<String, Object> approve = approveService.getApproveDetail(approveId);
+            System.out.println("[DEBUG] 获取到的审批记录: " + approve);
+            
+            if (approve == null) {
+                System.out.println("[ERROR] 审批记录不存在");
+                model.addAttribute("error", "审批记录不存在");
+                return "redirect:/document/approve-list?error=审批记录不存在";
+            }
+            
+            // 检查是否是作废类型审批
+            String approveType = (String) approve.get("type");
+            System.out.println("[DEBUG] 审批类型: " + approveType);
+            
+            if (!"void".equals(approveType)) {
+                System.out.println("[ERROR] 非作废类型审批: " + approveType);
+                model.addAttribute("error", "非作废类型审批");
+                return "redirect:/document/approve-list?error=非作废类型审批";
+            }
+            
+            // 获取关联的档案信息
+            Long documentId = (Long) approve.get("ref_id");
+            System.out.println("[DEBUG] 关联的档案ID: " + documentId);
+            
+            Document document = documentService.getDocumentById(documentId);
+            if (document == null) {
+                System.out.println("[ERROR] 关联档案不存在");
+                model.addAttribute("error", "关联档案不存在");
+                return "redirect:/document/approve-list?error=关联档案不存在";
+            }
+            
+            System.out.println("[DEBUG] 档案信息: " + document);
+            
+            // 将 Document 对象转换为 Map，以便在 JSP 中可以正确访问属性
+            Map<String, Object> documentMap = new HashMap<>();
+            documentMap.put("id", document.getId());
+            documentMap.put("code", document.getCode());
+            documentMap.put("title", document.getTitle());
+            documentMap.put("status", document.getStatus());
+            documentMap.put("createTime", document.getCreateTime());
+            
+            System.out.println("[DEBUG] 转换后的档案Map: " + documentMap);
+            
+            model.addAttribute("approve", approve);
+            model.addAttribute("document", documentMap);
+            
+            System.out.println("[DEBUG] 准备返回视图: document/view-void");
+            
+            return "document/view-void";
+        } catch (Exception e) {
+            System.out.println("[ERROR] 查看作废详情异常: " + e.getMessage());
+            e.printStackTrace();
+            model.addAttribute("error", "查看作废详情失败: " + e.getMessage());
+            return "redirect:/document/approve-list?error=系统错误";
+        }
+    }
+
+    // 添加测试作废审批记录（用于测试）
+    @GetMapping("/test-add-void-approve")
+    @ResponseBody
+    public String testAddVoidApprove(HttpSession session) {
+        try {
+            // 检查登录
+            Object userIdObj = session.getAttribute("userId");
+            if (userIdObj == null) {
+                return "请先登录";
+            }
+            Long userId = (Long) userIdObj;
+            
+            // 获取一个存在的档案ID
+            List<Document> docs = documentService.getDocumentsByStatus(1); // 获取正常状态的档案
+            if (docs == null || docs.isEmpty()) {
+                return "没有可用的档案";
+            }
+            
+            Document document = docs.get(0);
+            Long documentId = document.getId();
+            
+            // 创建作废审批记录
+            Approve approve = new Approve();
+            approve.setType("void");
+            approve.setRefId(documentId);
+            approve.setApplicantId(userId);
+            approve.setApproverId(userId); // 自己审批自己（测试用）
+            approve.setStatus(0); // 0表示待审批
+            approve.setApplyTime(java.time.LocalDateTime.now());
+            approve.setRemark("测试作废申请");
+            
+            // 保存审批记录
+            Long approveId = approveService.addApprove(approve);
+            
+            return "成功添加测试作废审批记录，ID: " + approveId + ", 档案ID: " + documentId;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "添加测试作废审批记录失败: " + e.getMessage();
         }
     }
 }
