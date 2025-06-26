@@ -13,6 +13,13 @@
         .action-btn { background: #8e24aa; color: #fff; border: none; border-radius: 4px; padding: 6px 16px; margin: 0 4px; cursor: pointer; transition: background 0.2s; text-decoration: none; }
         .action-btn:hover { background: #6d1b7b; }
     </style>
+    <script>
+        function confirmDelete(id) {
+            if (confirm("确定要将此档案移至回收站吗？")) {
+                window.location.href = "${pageContext.request.contextPath}/document/delete?id=" + id;
+            }
+        }
+    </script>
 </head>
 <body>
 <h2 style="text-align:center; color:#8e24aa; margin-top:30px;">密级档案</h2>
@@ -27,7 +34,7 @@
             <td>${doc.secretLevelName}</td>
             <td>
                 <a href="${pageContext.request.contextPath}/document/view?id=${doc.id}" class="action-btn">查看</a>
-                <a href="#" class="action-btn" style="background:#e53935;">删除</a>
+                <a href="javascript:void(0)" onclick="confirmDelete(${doc.id})" class="action-btn" style="background:#e53935;">删除</a>
             </td>
         </tr>
     </c:forEach>

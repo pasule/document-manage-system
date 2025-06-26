@@ -16,6 +16,8 @@
         .btn-reset:hover { background: #616161; }
         .btn-add { background: #4caf50; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; text-decoration: none; }
         .btn-add:hover { background: #388e3c; }
+        .btn-home { background: #ff9800; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; text-decoration: none; margin-right: 10px; }
+        .btn-home:hover { background: #f57c00; }
         .doc-table { width: 100%; border-collapse: collapse; background: #fff; box-shadow: 0 2px 8px #e0e0e0; border-radius: 8px; overflow: hidden; }
         .doc-table th, .doc-table td { padding: 14px 12px; text-align: center; }
         .doc-table th { background: #1976d2; color: #fff; font-size: 16px; }
@@ -45,6 +47,7 @@
     <div class="header-actions">
         <h2 style="color:#1976d2; margin:0;">档案管理</h2>
         <div>
+            <a href="${pageContext.request.contextPath}/" class="btn-home">返回主页</a>
             <a href="${pageContext.request.contextPath}/document/upload" class="btn-add">上传新档案</a>
         </div>
     </div>
