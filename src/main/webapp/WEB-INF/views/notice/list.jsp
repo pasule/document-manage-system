@@ -176,7 +176,7 @@
 </head>
 <body>
 <div class="container">
-    <h2>系统通知管理</h2>
+    <h2>消息通知</h2>
 
     <div class="action-buttons">
         <a href="${pageContext.request.contextPath}/notice/send" class="btn btn-primary">发送新通知</a>

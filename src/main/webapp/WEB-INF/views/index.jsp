@@ -114,6 +114,9 @@
         <div class="menu-item">
             <a href="${pageContext.request.contextPath}/document/recycle">回收站</a>
         </div>
+        <div class="menu-item">
+            <a href="${pageContext.request.contextPath}/notice/list">消息通知</a>
+        </div>
 
         <c:if test="${isAdmin}">
             <div class="menu-category">管理员功能</div>
