@@ -3,6 +3,7 @@ package com.manage.service;
 import com.manage.entity.Borrow;
 import java.util.List;
 import java.util.Map;
+import java.time.LocalDateTime;
 
 public interface BorrowService {
     /**
@@ -49,4 +50,13 @@ public interface BorrowService {
      * 统计借阅记录数
      */
     int countBorrows(Map<String, Object> params);
+    
+    /**
+     * 直接更新借阅状态（解决Lombok问题）
+     * @param borrowId 借阅ID
+     * @param status 状态
+     * @param returnTime 归还时间
+     * @return 影响行数
+     */
+    int directUpdateBorrowStatus(Long borrowId, int status, LocalDateTime returnTime);
 } 

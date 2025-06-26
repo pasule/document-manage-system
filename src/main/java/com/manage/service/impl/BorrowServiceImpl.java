@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.time.LocalDateTime;
 
 @Service
 public class BorrowServiceImpl implements BorrowService {
@@ -59,5 +60,11 @@ public class BorrowServiceImpl implements BorrowService {
     @Override
     public int countBorrows(Map<String, Object> params) {
         return borrowMapper.countBorrows(params);
+    }
+    
+    @Override
+    public int directUpdateBorrowStatus(Long borrowId, int status, LocalDateTime returnTime) {
+        // 使用简单的状态更新方法
+        return borrowMapper.updateStatus(borrowId, status);
     }
 } 

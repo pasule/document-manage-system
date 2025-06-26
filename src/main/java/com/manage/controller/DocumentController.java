@@ -871,14 +871,13 @@ public class DocumentController {
             }
             
             // 检查状态
-            if (borrow.getStatus() != 1 && borrow.getStatus() != 3) { // 1表示已借出，3表示逾期
+            Integer status = borrow.getStatus();
+            if (status == null || (status != 1 && status != 3)) { // 1表示已借出，3表示逾期
                 return "redirect:/document/borrow-list";
             }
             
-            // 更新借阅状态
-            borrow.setStatus(2); // 2表示已归还
-            borrow.setReturnTime(java.time.LocalDateTime.now());
-            borrowService.updateBorrow(borrow);
+            // 直接更新借阅状态为已归还(2)
+            borrowService.directUpdateBorrowStatus(borrowId, 2, null);
             
             return "redirect:/document/borrow-list";
         } catch (Exception e) {

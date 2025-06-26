@@ -24,6 +24,26 @@
             color: #333;
             border-bottom: 1px solid #ddd;
             padding-bottom: 10px;
+            display: inline-block;
+            margin-right: 20px;
+        }
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .home-button {
+            background-color: #ff9800;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-left: auto;
+        }
+        .home-button:hover {
+            background-color: #f57c00;
         }
         table {
             width: 100%;
@@ -145,10 +165,36 @@
             font-size: 12px;
         }
     </style>
+    <script>
+        // 添加归还功能的JavaScript
+        function returnDocument(borrowId) {
+            if (confirm('确认归还此档案吗？')) {
+                // 创建一个表单并提交
+                var form = document.createElement('form');
+                form.method = 'GET';
+                form.action = '${pageContext.request.contextPath}/document/return';
+                
+                var idInput = document.createElement('input');
+                idInput.type = 'hidden';
+                idInput.name = 'id';
+                idInput.value = borrowId;
+                
+                form.appendChild(idInput);
+                document.body.appendChild(form);
+                form.submit();
+                
+                return true;
+            }
+            return false;
+        }
+    </script>
 </head>
 <body>
     <div class="container">
-        <h2>借阅记录列表</h2>
+        <div class="header-container">
+            <h2>借阅记录列表</h2>
+            <a href="${pageContext.request.contextPath}/" class="home-button">返回主页</a>
+        </div>
         
         <c:if test="${not empty error}">
             <div style="color: red; margin-bottom: 15px;">${error}</div>
@@ -290,8 +336,8 @@
                                 </c:otherwise>
                             </c:choose>
                             
-                            <c:if test="${(borrow.status == 1 || borrow.status == 3) && (borrow.userId == currentUserId || sessionScope.isAdmin)}">
-                                <a href="${pageContext.request.contextPath}/document/return?id=${borrow.id}" class="btn btn-success" onclick="return confirm('确认归还此档案吗？')">归还</a>
+                            <c:if test="${(borrow.status == 1 || borrow.status == 3) && borrow.user_id == currentUserId}">
+                                <a href="javascript:void(0)" class="btn btn-success" onclick="returnDocument(${borrow.id})">归还</a>
                             </c:if>
                             
                             <c:if test="${sessionScope.isAdmin == true && borrow.status == 0}">

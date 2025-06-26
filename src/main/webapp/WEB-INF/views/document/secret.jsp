@@ -12,6 +12,9 @@
         .doc-table tr:hover { background: #ce93d8; }
         .action-btn { background: #8e24aa; color: #fff; border: none; border-radius: 4px; padding: 6px 16px; margin: 0 4px; cursor: pointer; transition: background 0.2s; text-decoration: none; }
         .action-btn:hover { background: #6d1b7b; }
+        .header-container { display: flex; justify-content: space-between; align-items: center; width: 90%; margin: 30px auto 10px auto; }
+        .home-button { background: #ff9800; color: #fff; border: none; border-radius: 4px; padding: 8px 16px; cursor: pointer; text-decoration: none; font-weight: bold; }
+        .home-button:hover { background: #f57c00; }
     </style>
     <script>
         function confirmDelete(id) {
@@ -22,7 +25,11 @@
     </script>
 </head>
 <body>
-<h2 style="text-align:center; color:#8e24aa; margin-top:30px;">密级档案</h2>
+<div class="header-container">
+    <h2 style="color:#8e24aa; margin:0;">密级档案</h2>
+    <a href="${pageContext.request.contextPath}/" class="home-button">返回主页</a>
+</div>
+
 <table class="doc-table">
     <tr>
         <th>编号</th><th>标题</th><th>密级</th><th>操作</th>

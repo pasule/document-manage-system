@@ -178,4 +178,15 @@
             </if>
         </where>
     </select>
+
+    <!-- 添加新的updateStatus方法，用于直接更新借阅状态 -->
+    <update id="updateStatus">
+        UPDATE borrow 
+        SET status = #{status},
+            return_time = CASE 
+                WHEN #{status} = 2 THEN NOW() 
+                ELSE return_time 
+            END
+        WHERE id = #{id}
+    </update>
 </mapper> 

@@ -30,7 +30,24 @@
         .related-list .status-1 { color: #4caf50; } /* 已借出/已通过 */
         .related-list .status-2 { color: #2196f3; } /* 已归还/已拒绝 */
         .related-list .status-3 { color: #f44336; } /* 逾期 */
+        .footer-links { display: flex; justify-content: center; margin-top: 24px; gap: 20px; }
+        .home-button { color: #ff9800; text-decoration: underline; }
+        .home-button:hover { color: #f57c00; }
     </style>
+    <script>
+        // 页面加载完成后刷新一次，确保数据最新
+        window.onload = function() {
+            // 检查URL中是否有refresh参数，如果没有则添加并刷新
+            if (window.location.href.indexOf('refresh=true') === -1) {
+                // 添加一个时间戳参数防止缓存
+                var timestamp = new Date().getTime();
+                var refreshUrl = window.location.href + 
+                    (window.location.href.indexOf('?') > -1 ? '&' : '?') + 
+                    'refresh=true&t=' + timestamp;
+                window.location.href = refreshUrl;
+            }
+        };
+    </script>
 </head>
 <body>
 <div class="view-card">
@@ -82,7 +99,7 @@
             <ul class="related-list">
                 <c:forEach items="${borrowRecords}" var="borrow">
                     <li>
-                        ${borrow.userName} - ${borrow.borrowTime}
+                        ${borrow.user_name} - ${borrow.borrow_time_str}
                         <span class="status-${borrow.status}">
                             <c:choose>
                                 <c:when test="${borrow.status == 0}">申请中</c:when>
@@ -120,7 +137,10 @@
         </div>
     </c:if>
     
-    <a href="${pageContext.request.contextPath}/document/list" class="back-link">返回列表</a>
+    <div class="footer-links">
+        <a href="${pageContext.request.contextPath}/document/list" class="back-link">返回列表</a>
+        <a href="${pageContext.request.contextPath}/" class="home-button">返回主页</a>
+    </div>
 </div>
 </body>
 </html>

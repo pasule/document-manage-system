@@ -52,4 +52,9 @@ public interface BorrowMapper {
      * 统计借阅记录数
      */
     int countBorrows(@Param("params") Map<String, Object> params);
+    
+    /**
+     * 直接更新借阅状态
+     */
+    int updateStatus(@Param("id") Long id, @Param("status") int status);
 } 
