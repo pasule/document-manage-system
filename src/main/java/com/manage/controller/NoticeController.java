@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -24,9 +25,38 @@ public class NoticeController {
      * 系统通知列表页
      */
     @GetMapping("/list")
-    public String list(Model model) {
-        List<Notice> notices = noticeService.getAllNotices();
-        model.addAttribute("notices", notices);
+    public String list(@RequestParam(value = "title", required = false) String title,
+                       @RequestParam(value = "status", required = false) Integer status,
+                       @RequestParam(value = "priority", required = false) Integer priority,
+                       @RequestParam(value = "page", defaultValue = "1") int page,
+                       @RequestParam(value = "size", defaultValue = "10") int size,
+                       Model model) {
+        List<Notice> allNotices = noticeService.getNoticeByFilter(title,status,priority);
+        // 分页处理
+        int total = allNotices.size();
+        int totalPages = (int) Math.ceil((double) total / size);
+
+        // 确保页码在有效范围内
+        if (page < 1) page = 1;
+        if (page > totalPages && totalPages > 0) page = totalPages;
+
+        // 计算当前页的数据
+        int fromIndex = (page - 1) * size;
+        int toIndex = Math.min(fromIndex + size, total);
+
+        List<Notice> pagedNotices = (fromIndex < toIndex)
+                ? allNotices.subList(fromIndex, toIndex)
+                : new ArrayList<>();
+
+        // 设置模型属性
+        model.addAttribute("notices", pagedNotices);
+        model.addAttribute("page", page);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("searchTitle", title);
+        model.addAttribute("searchStatus", status);
+        model.addAttribute("searchPriority", priority);
+        //List<Notice> notices = noticeService.getAllNotices();
+        //model.addAttribute("notices", notices);
         return "notice/list";
     }
 

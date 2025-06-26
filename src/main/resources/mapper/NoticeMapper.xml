@@ -3,7 +3,20 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.manage.mapper.NoticeMapper">
-
+    <resultMap id="NoticeResultMap" type="com.manage.entity.Notice">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="type" column="type"/>
+        <result property="priority" column="priority"/>
+        <result property="status" column="status"/>
+        <result property="senderId" column="sender_id"/>
+        <result property="receiverId" column="receiver_id"/>
+        <result property="sendTime" column="send_time"/>
+        <result property="readTime" column="read_time"/>
+        <result property="senderId" column="sender_id"/>
+        <result property="receiverId" column="receiver_id"/>
+    </resultMap>
     <!-- 查询所有系统通知 -->
     <select id="findAll" resultType="com.manage.entity.Notice">
         SELECT * FROM notice ORDER BY send_time DESC
@@ -31,6 +44,28 @@
     <select id="findByStatus" parameterType="int" resultType="com.manage.entity.Notice">
         SELECT * FROM notice WHERE status = #{status}
         ORDER BY send_time DESC
+    </select>
+    <select id="selectByFilter" resultType="com.manage.entity.Notice" parameterType="java.util.Map" resultMap="NoticeResultMap">
+        SELECT
+        n.*,
+        s.username AS sender_name,
+        r.username AS receiver_name
+        FROM notice n
+        LEFT JOIN user s ON n.sender_id = s.id  <!-- 发送者名称 -->
+        LEFT JOIN user r ON n.receiver_id = r.id  <!-- 接收者名称 -->
+        <where>
+            <if test="title != null and title != ''">
+                AND n.title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="status != null">
+                AND n.status = #{status}
+            </if>
+            <if test="priority != null">
+                AND n.priority = #{priority}
+            </if>
+        </where>
+        ORDER BY n.send_time DESC
+
     </select>
 
     <!-- 插入新通知 -->

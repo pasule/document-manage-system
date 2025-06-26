@@ -4,6 +4,7 @@ import com.manage.entity.Notice;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface NoticeMapper {
@@ -29,4 +30,6 @@ public interface NoticeMapper {
 
     // 更新通知阅读状态
     void updateStatus(Long id, Integer status, java.time.LocalDateTime readTime);
+
+    List<Notice> selectByFilter(Map<String, Object> map);
 }

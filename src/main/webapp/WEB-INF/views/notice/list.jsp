@@ -184,7 +184,7 @@
     </div>
 
     <!-- 搜索区域 -->
-    <div class="search-form">
+    <form class="search-form">
         <div class="form-group">
             <label for="title">通知标题</label>
             <input type="text" id="title" name="title" placeholder="输入标题关键字">
@@ -214,7 +214,7 @@
             <label>&nbsp;</label>
             <button class="btn btn-primary" style="align-self: flex-end;">搜索</button>
         </div>
-    </div>
+    </form>
 
     <table>
         <thead>

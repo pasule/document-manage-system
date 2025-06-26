@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class NoticeServiceImpl implements NoticeService {
@@ -82,6 +84,23 @@ public class NoticeServiceImpl implements NoticeService {
     public void deleteNotice(Long id) {
         noticeMapper.delete(id);
     }
+
+    @Override
+    public List<Notice> getNoticeByFilter(String title, Integer status, Integer priority) {
+        Map<String, Object> map = new HashMap<>();
+
+        if (title != null && title.length() > 0) {
+            map.put("title", title);
+        }
+        if (status != null) {
+            map.put("status", status);
+        }
+        if (priority != null) {
+            map.put("priority", priority);
+        }
+        return noticeMapper.selectByFilter(map);
+    }
+
 
 //    @Override
 //    public List<Notice> getUnreadNoticesByUser(Long userId) {
