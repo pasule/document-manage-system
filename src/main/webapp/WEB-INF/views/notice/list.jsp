@@ -218,7 +218,8 @@
 
     <table>
         <thead>
-        <tr class="icon-text-width=100%">
+        <tr>
+            <th>  </th>
             <th>ID</th>
             <th>标题</th>
             <th>类型</th>
