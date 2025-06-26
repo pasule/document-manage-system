@@ -18,7 +18,10 @@
     <select id="findById" resultMap="UserResultMap">
         SELECT * FROM user WHERE id = #{id}
     </select>
-    
+    <select id="findAll" resultType="com.manage.entity.User">
+        SELECT * FROM user order by id
+    </select>
+
     <insert id="insert" parameterType="com.manage.entity.User" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO user (username, password, real_name, status)
         VALUES (#{username}, #{password}, #{realName}, #{status})

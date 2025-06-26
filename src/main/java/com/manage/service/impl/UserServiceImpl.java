@@ -6,6 +6,8 @@ import com.manage.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
@@ -45,5 +47,10 @@ public class UserServiceImpl implements UserService {
     public boolean isAdmin(Long userId) {
         User user = userMapper.findById(userId);
         return user != null && user.getRole() != null && user.getRole() == 2; // 2表示管理员
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        return userMapper.findAll();
     }
 }

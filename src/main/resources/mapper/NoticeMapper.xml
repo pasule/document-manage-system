@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.manage.mapper.NoticeMapper">
+
+    <!-- 查询所有系统通知 -->
+    <select id="findAll" resultType="com.manage.entity.Notice">
+        SELECT * FROM notice ORDER BY send_time DESC
+    </select>
+
+    <!-- 根据ID查询通知 -->
+    <select id="findById" parameterType="long" resultType="com.manage.entity.Notice">
+        SELECT * FROM notice WHERE id = #{id}
+    </select>
+
+    <!-- 根据接收人ID查询通知 -->
+    <select id="findByReceiverId" parameterType="long" resultType="com.manage.entity.Notice">
+        SELECT * FROM notice WHERE receiver_id = #{receiverId}
+        ORDER BY send_time DESC
+    </select>
+
+    <!-- 根据优先级查询通知 -->
+    <select id="findByPriority" parameterType="int" resultType="com.manage.entity.Notice">
+        SELECT * FROM notice WHERE priority = #{priority}
+        AND status != 2 <!-- 排除已归档的 -->
+        ORDER BY send_time DESC
+    </select>
+
+    <!-- 根据状态查询通知 -->
+    <select id="findByStatus" parameterType="int" resultType="com.manage.entity.Notice">
+        SELECT * FROM notice WHERE status = #{status}
+        ORDER BY send_time DESC
+    </select>
+
+    <!-- 插入新通知 -->
+    <insert id="insert" parameterType="com.manage.entity.Notice" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO notice (
+            title,
+            content,
+            type,
+            priority,
+            status,
+            sender_id,
+            receiver_id,
+            send_time,
+            remark
+        )
+        VALUES (
+                   #{title},
+                   #{content},
+                   #{type},
+                   #{priority},
+                   #{status},
+                   #{senderId},
+                   #{receiverId},
+                   #{sendTime},
+                   #{remark}
+               )
+    </insert>
+
+    <!-- 更新通知信息 -->
+    <update id="update" parameterType="com.manage.entity.Notice">
+        UPDATE notice
+        <set>
+            <if test="title != null">title = #{title},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="priority != null">priority = #{priority},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="senderId != null">sender_id = #{senderId},</if>
+            <if test="receiverId != null">receiver_id = #{receiverId},</if>
+            <if test="sendTime != null">send_time = #{sendTime},</if>
+            <if test="readTime != null">read_time = #{readTime},</if>
+            <if test="archiveTime != null">archive_time = #{archiveTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 更新通知状态（包括阅读时间/归档时间） -->
+    <update id="updateStatus">
+        UPDATE notice
+        SET
+        status = #{status},
+        <if test="status == 1"> <!-- 标记为已读时设置阅读时间 -->
+            read_time = #{readTime}
+        </if>
+        <if test="status == 2"> <!-- 标记为归档时设置归档时间 -->
+            archive_time = #{readTime} <!-- 这里重用readTime参数作为操作时间 -->
+        </if>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除通知 -->
+    <delete id="delete" parameterType="long">
+        DELETE FROM notice WHERE id = #{id}
+    </delete>
+
+</mapper>

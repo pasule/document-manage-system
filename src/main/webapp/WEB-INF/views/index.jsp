@@ -114,7 +114,7 @@
         <div class="menu-item">
             <a href="${pageContext.request.contextPath}/document/recycle">回收站</a>
         </div>
-        
+
         <c:if test="${isAdmin}">
             <div class="menu-category">管理员功能</div>
             <div class="menu-item">
@@ -130,17 +130,17 @@
                 <a href="${pageContext.request.contextPath}/tag/list">标签管理</a>
             </div>
         </c:if>
-        
+
         <div class="menu-category">系统设置</div>
         <div class="menu-item">
             <a href="${pageContext.request.contextPath}/rule/list">档号规则</a>
         </div>
     </div>
-    
+
     <div class="content">
         <h2>欢迎使用档案管理系统</h2>
         <p>请从左侧菜单选择相应功能进行操作。</p>
-        
+
         <c:if test="${isAdmin}">
             <div style="margin-top: 20px; padding: 15px; background-color: #e1f5fe; border-radius: 5px; border-left: 4px solid #03a9f4;">
                 <h3 style="margin-top: 0;">管理员待办事项</h3>
